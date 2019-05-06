@@ -9,6 +9,6 @@ module.exports = async function buildYearList(globalState) {
     this.years.push(this.mainURLDOM(item).text())
   })
 
-  const newState = await updateGlobalState({ years: this.years })
+  const newState = updateGlobalState({ years: this.years })
   return newState
 }
