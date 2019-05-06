@@ -1,13 +1,22 @@
 const updateGlobalState = require('./updateGlobalState')
 const getPaintingsforYear = require('./getPaintingsforYear')
 
-module.exports = async function buildPaintingsDirectory(globalState) {
-  this.paintingYears = {}
-  // const paintingYearsData = await 
-  return globalState.years.map(async year => {
-    this.paintingYears[year] = await getPaintingsforYear(globalState, year)
-    // return Promise.all(this.paintingYears).then(async completed => {
-    //   return updateGlobalState({ yearsData: completed })
-    // })
+function makePromiseArray(globalState) {
+  this.promiseArray = []
+
+  globalState.years.map(async year => {
+    this.promiseArray.push(getPaintingsforYear(globalState, year))
   })
+
+  return this.promiseArray
+}
+
+module.exports = async function buildPaintingsDirectory(globalState) {  
+  const yearItemPromiseArray = makePromiseArray(globalState)
+  return Promise.all(yearItemPromiseArray)
+    .then((result) => { 
+      const newState = updateGlobalState({ yearsData: result })
+      return newState
+    })
+    .catch(() => { console.log('ERROR on YEAR') })
 }

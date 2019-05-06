@@ -16,6 +16,7 @@ module.exports = async function getCleanDOM (url) {
 
       return this.siteURLDOM
     } catch (err) {
+      console.log(`ERROR - TRYING ${url} AGAIN`)
       if(!err.response.status === 404) {
         retry()
       } else {

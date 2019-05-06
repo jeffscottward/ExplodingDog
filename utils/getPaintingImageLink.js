@@ -1,4 +1,5 @@
 const getCleanDOM = require('./getCleanDOM')
+const globalState = require('./globalState')
 
 module.exports = async function getPaintingImageLink(paintingPageLink) {
   async function retry(err) {
@@ -8,15 +9,12 @@ module.exports = async function getPaintingImageLink(paintingPageLink) {
         const $ = this.paintingPageDOM
         const img = $('img')
         const imgSRC = img.attr('src')
-        return imgSRC
+        return (globalState.mainURL + imgSRC).replace('//drawing', '/drawing')
       } else {
         return '404'
       }
     } catch (err) {
-      // if(!err === err )
-      // console.log(paintingPageLink)
-      // console.log({err})
-      console.log('TRYING AGAIN')
+      console.log(`ERROR - TRYING ${paintingPageLink} AGAIN`)
       retry()
     }
   }

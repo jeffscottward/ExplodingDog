@@ -4,26 +4,27 @@ const fs = require('fs')
 let globalState = require('./globalState')
 
 module.exports = async function runScrape() {
-  // OK
+  // Get all the Years
   const stateWithYears = await buildYearList(globalState)
-  // console.log({stateWithYears})
-
-  // NOT OK
+  
+  // Get all the art for all the years
   const paintingDirectoryMap = await buildPaintingsDirectory(stateWithYears)
-  // console.log({paintingDirectoryMap})
-
-  // FINALLY WRITE FILE
-  // Promise.all(paintingDirectoryMap.yearsData).then(async value => {
-  //   console.log('runScrape promise all CB')
-  //   console.log({value})
-    // fs.writeFile(
-    //   "EDSitemap.json",
-    //   JSON.stringify(stateWithYears.yearsData, null, 4),
-    //   function(err) {
-    //     console.log(
-    //       "File successfully written! - Check your project directory for the EDSitemap.json file"
-    //     )
-    //   }
-    // )
-  // })
+  
+  // Resolve the promises of promises of art
+  // Write result to file
+  Promise.all(paintingDirectoryMap.yearsData)
+    .then((result) => {
+      fs.writeFile(
+        'EDSitemap.json',
+        JSON.stringify(result, null, 4),
+        (err) => {
+          if (err) throw err
+          console.log('EDSitemap.json written successfully')
+        }
+      )
+    })
+    .catch((err) => {
+      if (err) throw err
+      console.log('PROGRAM FAIL')
+    })
 }
