@@ -18,6 +18,8 @@ module.exports = async function getCleanDOM (url) {
     } catch (err) {
       if(!err.response.status === 404) {
         retry()
+      } else {
+        return '404'
       }
     }
   }  
