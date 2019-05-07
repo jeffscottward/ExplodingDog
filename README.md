@@ -9,7 +9,7 @@
 ### TODO
 - [x] Build:Sitemap of all the existing art
 - [x] Build:Download-Script all of the art
-- [ ] Learn:How-To-Build Machine Learning bot to generate new images
+- [ ] Learn:How-To-Build Machine Learning bot to generate new drawings
 - [ ] Build:ML-Bot to generate new art
 - [ ] Build:WebUI to click-trigger the generatation of new art (in the browser? - Tensorflow.js)
 - [ ] Build/Find:Ecommerce-Stack in Node.js for buying canvas of generated art
@@ -29,11 +29,11 @@ _NOTE: These are *long* running async calls, **process may take a couple of minu
 
 #### Build the sitemap first
 ```bash
-node index.js runscrape
+node index.js runwebscrape
 ```
 
-#### Download all the images
+#### Download all the drawings
 ```bash
-node index.js getimages
+node index.js rundownloaddrawings
 ```
 
