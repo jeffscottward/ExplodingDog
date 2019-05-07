@@ -1,4 +1,6 @@
-# `ExplodingDog.ai` - A Node.js app to generate ExplodingDog art
+# `ExplodingDog.ai`
+#### A Node.js app to generate ExplodingDog art
+
 ## About
 
 This is a Node.js application that retreives all 3000+ pieces of art that have been created explodingdog.com, over the course of 15 years.
