@@ -36,12 +36,9 @@ module.exports = async function getSiteMap () {
 
       Object.keys(dayObj).map((dayKey) => {
         makeAndEnterFolder(dayKey)
-
-        // console.log(sh.pwd().stdout)
         let paintingsListObj = dayObj[dayKey]
         paintingsListObj.map((paintingURL) => {
-          if (paintingURL !== null) {
-            // console.log(sh.pwd().stdout)
+          if (paintingURL !== null && !paintingURL.includes('.gif')) {
             axios({
               url: paintingURL,
               responseType: 'stream',
@@ -52,7 +49,6 @@ module.exports = async function getSiteMap () {
                   (sh.pwd().stdout + '/' + yearKey + '/' + dayKey + '/' + fileName)
                 )
               )
-              // DO SOMETHIN GHERE
             }).catch(error => ({
               status: false,
               error: 'Error: ' + error.message,
