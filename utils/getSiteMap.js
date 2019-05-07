@@ -1,68 +1,47 @@
 const fs = require('fs')
 const sh = require('shelljs')
 
-module.exports = async function getSiteMap () {
-  sh.rm('-rf', 'pictures')
+const picDir = 'pictures'
 
-  const contents = fs.readFileSync('EDSitemap.json', 'utf8')
+function makeAndEnterFolder(folderName) {
+  sh.mkdir(folderName)
+  sh.cd(folderName)
+}
+
+function retreiveSiteMap(name) {
+  const contents = fs.readFileSync(name, 'utf8')
   const contentsJSON = JSON.parse(contents)
-  const picDir = 'pictures'
+  return contentsJSON
+}
+
+function recycle(folderName) {
+  sh.rm('-rf', folderName)
+}
+
+module.exports = async function getSiteMap () {
+  recycle(picDir)
+  makeAndEnterFolder(picDir)
   
-  sh.mkdir(picDir)
-  sh.cd(picDir)
-  contentsJSON.forEach((yearOBJ) => {
+  const siteMap = retreiveSiteMap('EDSitemap.json', 'utf8')
+  siteMap.forEach((yearOBJ) => {
     
     Object.keys(yearOBJ).map((yearKey) => {
-      sh.mkdir(yearKey)
-      sh.cd(yearKey)
-
+      makeAndEnterFolder(yearKey)
       let dayObj = yearOBJ[yearKey]
-      Object.keys(dayObj).map((dayKey) => {
-        sh.mkdir(dayKey)
-        sh.cd(dayKey)
 
+      Object.keys(dayObj).map((dayKey) => {
+        makeAndEnterFolder(dayKey)
+        
         // Request FILE
         // Check if file is good
         // Save file or try again with other file type (recursive)
         let paintingsListObj = dayObj[dayKey]
         paintingsListObj.map((paintingURL) => {
-
+          
           axios.get(paintingURL)
-                .then(function (response) {
-                  // console.log('SUCCESS')
-                  // console.log(response.status)
-                  // console.log('-----------')
-                })
-                .catch(async function (error) {
-                  // console.log('ERROR')
-                  // console.log(error.error)
-                  // console.log('-----------')
-
-                  // Throttle
-                  await throttle()
-                  const jpg = paintingURL.replace('.png','.jpg')
-                  // const gif = paintingURL.replace('.png','.gif')
-
-                  axios.get(jpg)
-                      .then(function (response) {
-                        // console.log('SUCCESS')
-                        // console.log(response.status)
-                        // console.log('-----------')
-                      })
-                      .catch(function (error) {
-                        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXERROR')
-                        console.log(jpg.replace('.jpg','.html'))
-                        // console.log(error.error)
-                        // console.log('-----------')
-                      })
-   
-                })
-
-          // console.log(paintingsList)
-          // paintingsList.forEach((url) => {
-          //   console.log(url)
-          // })
-
+                .then((response) => {console.log({response})})
+                .catch((error) => {console.log({error})})
+          
           // fs.writeFile(filepath, fileContent)
         })
         sh.cd('..')
