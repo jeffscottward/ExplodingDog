@@ -7,6 +7,17 @@ This is a Node.js application that retreives all 3000+ pieces of art that have b
 
 The code is well commented as it has several layers of promises that all eventually resolve to the top parent promise of all the years of art
 
+### TODO
+- [x] Build:Sitemap of all the existing art
+- [x] Build:Download-Script all of the art
+- [ ] Learn:How-To-Build Machine Learning bot to generate new images
+- [ ] Build:ML-Bot to generate new art
+- [ ] Build:WebUI to click-trigger the generatation of new art (in the browser? - Tensorflow.js)
+- [ ] Build/Find:Ecommerce-Stack in Node.js for buying canvas of generated art
+- [ ] Build:Feature:WebUI+Backend - submit generated image for purchase to backend
+- [ ] Build:Feature:WebUI - show previously purchased items in a gallery (to purchase again)
+- [ ] Integrate Stripe (or other $ processor)
+
 ## Running the app
 _Make sure to have [Node.js](https://nodejs.org/en/download/package-manager/) (and npm) installed first_
 
