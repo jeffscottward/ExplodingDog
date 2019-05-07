@@ -18,7 +18,7 @@ if (process.argv.length <= 2) {
 const param = process.argv[2];
 
 // Handle FLAG passed
-switch (flag) {
+switch (param) {
   case 'run-web-scrape':
     runWebScrape()
     break;
