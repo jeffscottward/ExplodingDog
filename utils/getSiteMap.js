@@ -2,32 +2,56 @@ const fs = require('fs')
 const sh = require('shelljs')
 const axios = require('axios')
 
+// Destination Folder 
 const PICDIR = 'drawings'
 
+// Shell utilities
 function makeAndEnterFolder(folderName) {
   sh.mkdir(folderName)
   sh.cd(folderName)
 }
+function recycle(folderName) {
+  sh.rm('-rf', folderName)
+}
+function backOneFolderLevel() {
+  sh.cd('..')
+}
 
+// Read sitemap(aka directory) from disk
 function retreiveSiteMap(path) {
   const contents = fs.readFileSync(path, 'utf8')
   const contentsJSON = JSON.parse(contents)
   return contentsJSON
 }
 
-function recycle(folderName) {
-  sh.rm('-rf', folderName)
+// Get and save art image to correct folder 
+function saveFile(url, yearFolder, dayFolder){
+  axios({
+    url: url,
+    responseType: 'stream',
+  }).then(response => {
+    const fileName = response.config.url.split('/drawing/')[1]
+    response.data.pipe(
+      fs.createWriteStream(
+        (sh.pwd().stdout + '/' + yearFolder + '/' + dayFolder + '/' + fileName)
+      )
+    )
+  }).catch(error => ({
+    status: false,
+    error: 'Error: ' + error.message,
+  }));
 }
 
-function backOneFolderLevel() {
-  sh.cd('..')
-}
 
 module.exports = async function getSiteMap () {
+  // Start over w/ clean directory
   recycle(PICDIR)
   makeAndEnterFolder(PICDIR)
   
+  // Get sitemap
   const siteMap = retreiveSiteMap('../EDSitemap.json', 'utf8')
+
+  // Loop through array of year obj's
   siteMap.forEach((yearOBJ) => {
     
     // For each year
@@ -46,23 +70,9 @@ module.exports = async function getSiteMap () {
         paintingsListObj.map((paintingURL) => {
 
           // TODO - Skip gifs for now - erroring weird
-          if (paintingURL !== null && !paintingURL.includes('.gif')) {
-
-            // Get and save art image to correct folder 
-            axios({
-              url: paintingURL,
-              responseType: 'stream',
-            }).then(response => {
-              const fileName = response.config.url.split('/drawing/')[1]
-              response.data.pipe(
-                fs.createWriteStream(
-                  (sh.pwd().stdout + '/' + yearKey + '/' + dayKey + '/' + fileName)
-                )
-              )
-            }).catch(error => ({
-              status: false,
-              error: 'Error: ' + error.message,
-            }));
+          if (paintingURL !== null && 
+             !paintingURL.includes('.gif')) {
+            saveFile(paintingURL, yearKey, dayKey)
           }
         })
         backOneFolderLevel()
