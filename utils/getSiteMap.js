@@ -1,15 +1,16 @@
 const fs = require('fs')
 const sh = require('shelljs')
+const axios = require('axios')
 
-const picDir = 'pictures'
+const picDir = 'drawings'
 
 function makeAndEnterFolder(folderName) {
   sh.mkdir(folderName)
   sh.cd(folderName)
 }
 
-function retreiveSiteMap(name) {
-  const contents = fs.readFileSync(name, 'utf8')
+function retreiveSiteMap(path) {
+  const contents = fs.readFileSync(path, 'utf8')
   const contentsJSON = JSON.parse(contents)
   return contentsJSON
 }
@@ -18,11 +19,15 @@ function recycle(folderName) {
   sh.rm('-rf', folderName)
 }
 
+function backOneFolderLevel() {
+  sh.cd('..')
+}
+
 module.exports = async function getSiteMap () {
   recycle(picDir)
   makeAndEnterFolder(picDir)
   
-  const siteMap = retreiveSiteMap('EDSitemap.json', 'utf8')
+  const siteMap = retreiveSiteMap('../EDSitemap.json', 'utf8')
   siteMap.forEach((yearOBJ) => {
     
     Object.keys(yearOBJ).map((yearKey) => {
@@ -37,16 +42,25 @@ module.exports = async function getSiteMap () {
         // Save file or try again with other file type (recursive)
         let paintingsListObj = dayObj[dayKey]
         paintingsListObj.map((paintingURL) => {
-          
-          axios.get(paintingURL)
-                .then((response) => {console.log({response})})
-                .catch((error) => {console.log({error})})
-          
-          // fs.writeFile(filepath, fileContent)
+          if (paintingURL !== null) {
+            axios.get(paintingURL)
+              .then((response) => {
+                fs.writeFile(
+                  response.config.url.split('/drawing/')[1],
+                  response.data,
+                  (err) => {
+                    if (err) throw err;
+                    console.log('IMAGE saved!');
+                });
+              })
+              .catch((error) => {
+                console.log({ error })
+              })
+          }
         })
-        sh.cd('..')
+        backOneFolderLevel()
       })
-      sh.cd('..')
+      backOneFolderLevel()
     })
   })
 }
