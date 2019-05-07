@@ -36,26 +36,27 @@ module.exports = async function getSiteMap () {
 
       Object.keys(dayObj).map((dayKey) => {
         makeAndEnterFolder(dayKey)
-        
-        // Request FILE
-        // Check if file is good
-        // Save file or try again with other file type (recursive)
+
+        // console.log(sh.pwd().stdout)
         let paintingsListObj = dayObj[dayKey]
         paintingsListObj.map((paintingURL) => {
           if (paintingURL !== null) {
-            axios.get(paintingURL)
-              .then((response) => {
-                fs.writeFile(
-                  response.config.url.split('/drawing/')[1],
-                  response.data,
-                  (err) => {
-                    if (err) throw err;
-                    console.log('IMAGE saved!');
-                });
-              })
-              .catch((error) => {
-                console.log({ error })
-              })
+            // console.log(sh.pwd().stdout)
+            axios({
+              url: paintingURL,
+              responseType: 'stream',
+            }).then(response => {
+              const fileName = response.config.url.split('/drawing/')[1]
+              response.data.pipe(
+                fs.createWriteStream(
+                  (sh.pwd().stdout + '/' + yearKey + '/' + dayKey + '/' + fileName)
+                )
+              )
+              // DO SOMETHIN GHERE
+            }).catch(error => ({
+              status: false,
+              error: 'Error: ' + error.message,
+            }));
           }
         })
         backOneFolderLevel()
