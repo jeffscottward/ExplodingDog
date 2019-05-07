@@ -1,19 +1,25 @@
 const updateGlobalState = require('./updateGlobalState')
 const getPaintingsforYear = require('./getPaintingsforYear')
 
-function makePromiseArray(globalState) {
-  this.promiseArray = []
+// Construct an array of Promises to 
+// resolve completely before 
+// returning the sitemap (aka directory)
+function makeArrayOfPromises(globalState) {
+  this.arrayOfPromises = []
 
   globalState.years.map(async year => {
-    this.promiseArray.push(getPaintingsforYear(globalState, year))
+    this.arrayOfPromises.push(getPaintingsforYear(globalState, year))
   })
 
-  return this.promiseArray
+  return this.arrayOfPromises
 }
 
 module.exports = async function buildPaintingsDirectory(globalState) {  
-  const yearItemPromiseArray = makePromiseArray(globalState)
-  return Promise.all(yearItemPromiseArray)
+  // Create a promise array of ALL the years
+  const yearsPromiseArray = makeArrayOfPromises(globalState)
+  
+  // Resolve the entire sitemap
+  return Promise.all(yearsPromiseArray)
     .then((result) => { 
       const newState = updateGlobalState({ yearsData: result })
       return newState

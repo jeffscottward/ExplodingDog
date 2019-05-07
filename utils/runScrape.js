@@ -4,13 +4,13 @@ const fs = require('fs')
 let globalState = require('./globalState')
 
 module.exports = async function runScrape() {
-  // Get all the Years
+  // Get all the possible years
   const stateWithYears = await buildYearList(globalState)
   
-  // Get all the art for all the years
+  // Get all the art for all the found years
   const paintingDirectoryMap = await buildPaintingsDirectory(stateWithYears)
   
-  // Resolve the promises of promises of art
+  // Resolve the promises of promises of the art
   // Write result to file
   Promise.all(paintingDirectoryMap.yearsData)
     .then((result) => {

@@ -1,19 +1,21 @@
 const getPaintingImageLink = require('./getPaintingImageLink')
 
-module.exports = async function grabDateAndCorrespondingImageURL($, days, globalState) {
-  var currentYearData = {}
-  var promises = [];
+module.exports = async function grabDateAndCorrespondingImageURLS($, days, globalState) {
+  let currentYearData = {}
+  let promises = [];
 
+  // Build a map of promise arrays of art from passed html pages
   async function getAllArtForThisDay(pageLink, date, currentYearData) {
-    var imgLink = await getPaintingImageLink(pageLink)
+    let imgLink = await getPaintingImageLink(pageLink)
     currentYearData[date].push(imgLink)
   }
 
-  // Build request list
+  // Build promise array for pages for each day
   $(days).each((idx, day) => {
     const date = $(day).find('h3').text()
     currentYearData[date] = []
 
+    // Push the page URL into the promises array
     $(day)
       .find('a')
       .each(async (indx, paintingPageLink) => {
@@ -22,6 +24,7 @@ module.exports = async function grabDateAndCorrespondingImageURL($, days, global
       })
   })
   
+  // Resolve all art promises and return 
   return Promise.all(promises)
     .then((links) => {return currentYearData})
     .catch((e) => {console.log('ERROR')})

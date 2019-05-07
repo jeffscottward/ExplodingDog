@@ -2,7 +2,7 @@ const fs = require('fs')
 const sh = require('shelljs')
 const axios = require('axios')
 
-const picDir = 'drawings'
+const PICDIR = 'drawings'
 
 function makeAndEnterFolder(folderName) {
   sh.mkdir(folderName)
@@ -24,21 +24,31 @@ function backOneFolderLevel() {
 }
 
 module.exports = async function getSiteMap () {
-  recycle(picDir)
-  makeAndEnterFolder(picDir)
+  recycle(PICDIR)
+  makeAndEnterFolder(PICDIR)
   
   const siteMap = retreiveSiteMap('../EDSitemap.json', 'utf8')
   siteMap.forEach((yearOBJ) => {
     
+    // For each year
     Object.keys(yearOBJ).map((yearKey) => {
+      
       makeAndEnterFolder(yearKey)
       let dayObj = yearOBJ[yearKey]
 
+      // For each day of year
       Object.keys(dayObj).map((dayKey) => {
+
         makeAndEnterFolder(dayKey)
         let paintingsListObj = dayObj[dayKey]
+
+        // For each art of day
         paintingsListObj.map((paintingURL) => {
+
+          // TODO - Skip gifs for now - erroring weird
           if (paintingURL !== null && !paintingURL.includes('.gif')) {
+
+            // Get and save art image to correct folder 
             axios({
               url: paintingURL,
               responseType: 'stream',
